@@ -1,0 +1,10 @@
+configs {
+  key: "xpytest.unit"
+  value {
+    requirement {
+      cpu: 2
+      memory: 6
+    }
+    command: "bash .pfnci/script.sh"
+  }
+}
