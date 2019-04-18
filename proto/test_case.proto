@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package xpytest.proto;
+
+message TestQuery {
+  // File path to a python test.
+  string file = 1;
+
+  // Priority.  A test with a higher priority should precede.  This should be
+  // useful to avoid slow tests from wasting time because of starting late.
+  int32 priority = 2;
+
+  // Deadline in seconds.
+  float deadline = 3;
+
+  // # of processes in pytest-xdist.
+  int32 xdist = 4;
+
+  // # of retries.
+  int32 retry = 5;
+}
+
+message TestResult {
+  enum Status {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    INTERNAL = 2;
+    FAILED = 3;
+    TIMEOUT = 4;
+    FLAKY = 5;
+  }
+  Status status = 1;
+
+  // Test name (e.g., "tests/foo_tests/test_bar.py").
+  string name = 2;
+
+  // Standard output.
+  string stdout = 3;
+
+  // Standard error.
+  string stderr = 4;
+
+  // Duration that the test took.
+  float time = 5;
+}
+
+message HintFile {
+  message SlowTest {
+    // File name of a slow test (e.g.,"test_foo.py", "bar/test_foo.py").  Parent
+    // directories can be omitted (i.e., "test_foo.py" can matches
+    // "bar/test_foo.py").
+    string name = 1;
+
+    // Deadline in seconds.
+    float deadline = 2;
+
+    // # of processes in pytest-xdist.
+    int32 xdist = 3;
+
+    // # of retries.  For flaky tests.
+    int32 retry = 4;
+  }
+  repeated SlowTest slow_tests = 1;
+}
