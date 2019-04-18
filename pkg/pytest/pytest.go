@@ -72,7 +72,7 @@ func (p *Pytest) execute(
 	// Check deadline.
 	deadline := p.Deadline
 	if deadline <= 0 {
-		return nil, fmt.Errorf("Pytest.Deadline must be postiive value")
+		return nil, fmt.Errorf("Pytest.Deadline must be positive value")
 	}
 
 	// Execute pytest.

@@ -3,7 +3,7 @@ package resourcebuckets
 import "sync"
 
 // ResourceBuckets manages resource capacities.  This enables worker threads to
-// use limited resources wihtout exceeding their capacities.
+// use limited resources without exceeding their capacities.
 type ResourceBuckets struct {
 	buckets    []int
 	nextBucket int
@@ -16,7 +16,7 @@ type ResourceUsage struct {
 	Usage int
 }
 
-// NewResourceBuckets createa a new ResourceBuckets with buckets, each of which
+// NewResourceBuckets creates a new ResourceBuckets with buckets, each of which
 // has the same size of capacity.
 func NewResourceBuckets(size, capacityPerBucket int) *ResourceBuckets {
 	buckets := make([]int, size)
