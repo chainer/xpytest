@@ -1,9 +1,8 @@
-// +build !windows
-
 package pytest_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -13,7 +12,8 @@ import (
 
 func TestExecute(t *testing.T) {
 	ctx := context.Background()
-	r, err := pytest.Execute(ctx, []string{"true"}, time.Second, nil)
+	equivalentTrueCmd := []string{"cmd", "/c", "sort < NUL > NUL"}
+	r, err := pytest.Execute(ctx, equivalentTrueCmd, time.Second, nil)
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
 	}
@@ -24,7 +24,8 @@ func TestExecute(t *testing.T) {
 
 func TestExecuteWithFailure(t *testing.T) {
 	ctx := context.Background()
-	r, err := pytest.Execute(ctx, []string{"false"}, time.Second, nil)
+	equivalentFalseCmd := []string{"cmd", "/c", "echo Y | choice /C:Y > NUL"}
+	r, err := pytest.Execute(ctx, equivalentFalseCmd, time.Second, nil)
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
 	}
@@ -48,7 +49,7 @@ func TestExecuteWithTimeout(t *testing.T) {
 func TestExecuteWithEnvironmentVariables(t *testing.T) {
 	ctx := context.Background()
 	r, err := pytest.Execute(
-		ctx, []string{"bash", "-c", "echo $HOGE"},
+		ctx, []string{"cmd", "/c", "echo %HOGE%"},
 		time.Second, []string{"HOGE=PIYO"})
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
@@ -56,7 +57,7 @@ func TestExecuteWithEnvironmentVariables(t *testing.T) {
 	if r.Status != xpytest_proto.TestResult_SUCCESS {
 		t.Fatalf("unexpected status: %s", r.Status)
 	}
-	if r.Stdout != "PIYO\n" {
-		t.Fatalf("unexpected output: %s", r.Stdout)
+	if r.Stdout != "PIYO\r\n" {
+		t.Fatalf("unexpected output: %s", fmt.Sprintln("PIYO"))
 	}
 }
