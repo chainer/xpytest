@@ -13,7 +13,7 @@ import (
 func TestExecute(t *testing.T) {
 	ctx := context.Background()
 	equivalentTrueCmd := []string{"cmd", "/c", "sort < NUL > NUL"}
-	r, err := pytest.Execute(ctx, equivalentTrueCmd, time.Second, nil)
+	r, err := pytest.Execute(ctx, equivalentTrueCmd, time.Second*3, nil)
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
 	}
@@ -25,7 +25,7 @@ func TestExecute(t *testing.T) {
 func TestExecuteWithFailure(t *testing.T) {
 	ctx := context.Background()
 	equivalentFalseCmd := []string{"cmd", "/c", "echo Y | choice /C:Y > NUL"}
-	r, err := pytest.Execute(ctx, equivalentFalseCmd, time.Second, nil)
+	r, err := pytest.Execute(ctx, equivalentFalseCmd, time.Second*3, nil)
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
 	}
@@ -37,7 +37,8 @@ func TestExecuteWithFailure(t *testing.T) {
 func TestExecuteWithTimeout(t *testing.T) {
 	ctx := context.Background()
 	r, err := pytest.Execute(
-		ctx, []string{"sleep", "10"}, 100*time.Millisecond, nil)
+		ctx, []string{"cmd", "/c", "ping localhost -n 10 > NUL"},
+		time.Millisecond*100, nil)
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
 	}
@@ -50,7 +51,7 @@ func TestExecuteWithEnvironmentVariables(t *testing.T) {
 	ctx := context.Background()
 	r, err := pytest.Execute(
 		ctx, []string{"cmd", "/c", "echo %HOGE%"},
-		time.Second, []string{"HOGE=PIYO"})
+		time.Second*3, []string{"HOGE=PIYO"})
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
 	}
