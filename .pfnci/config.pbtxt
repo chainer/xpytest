@@ -8,3 +8,18 @@ configs {
     command: "bash .pfnci/script.sh"
   }
 }
+
+configs {
+  key: "xpytest.unit.win"
+  value {
+    requirement {
+      cpu: 2
+      memory: 6
+      image: "windows"
+    }
+    time_limit {
+      seconds: 1800
+    }
+    command: ".pfnci\\script.bat"
+  }
+}
