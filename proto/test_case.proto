@@ -18,6 +18,9 @@ message TestQuery {
 
   // # of retries.
   int32 retry = 5;
+
+  // Resource usage multiplier.
+  float resource = 6;
 }
 
 message TestResult {
@@ -45,7 +48,7 @@ message TestResult {
 }
 
 message HintFile {
-  message SlowTest {
+  message Rule {
     // File name of a slow test (e.g.,"test_foo.py", "bar/test_foo.py").  Parent
     // directories can be omitted (i.e., "test_foo.py" can matches
     // "bar/test_foo.py").
@@ -59,6 +62,12 @@ message HintFile {
 
     // # of retries.  For flaky tests.
     int32 retry = 4;
+
+    // Resource usage multiplier (default: 1.0).
+    float resource = 5;
   }
-  repeated SlowTest slow_tests = 1;
+  // TODO(imos): Deprecate this once it is confirmed that no one uses this.
+  repeated Rule slow_tests = 1;
+
+  repeated Rule rules = 2;
 }

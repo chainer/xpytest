@@ -3,6 +3,7 @@ package xpytest
 import (
 	"context"
 	"fmt"
+	"math"
 	"path"
 	"regexp"
 	"runtime"
@@ -18,6 +19,8 @@ import (
 	"github.com/chainer/xpytest/pkg/resourcebuckets"
 	xpytest_proto "github.com/chainer/xpytest/proto"
 )
+
+const resourceResolution = 1000
 
 // Xpytest is a controller for pytest queries.
 type Xpytest struct {
@@ -59,23 +62,27 @@ func (x *Xpytest) AddTestsWithFilePattern(pattern string) error {
 // CAVEAT: This computation order is O(n^2).  This can be improved by sorting by
 // suffixes.
 func (x *Xpytest) ApplyHint(h *xpytest_proto.HintFile) error {
-	for i := range h.GetSlowTests() {
+	rules := append(h.GetRules(), h.GetSlowTests()...)
+	for i := range rules {
 		priority := i + 1
-		hint := h.GetSlowTests()[len(h.GetSlowTests())-i-1]
+		rule := rules[len(rules)-i-1]
 		for _, tq := range x.GetTests() {
-			if tq.GetFile() == hint.GetName() ||
-				strings.HasSuffix(tq.GetFile(), "/"+hint.GetName()) {
+			if tq.GetFile() == rule.GetName() ||
+				strings.HasSuffix(tq.GetFile(), "/"+rule.GetName()) {
 				tq.Priority = int32(priority)
-				if hint.GetDeadline() != 0 {
-					tq.Deadline = hint.GetDeadline()
+				if rule.GetDeadline() != 0 {
+					tq.Deadline = rule.GetDeadline()
 				} else {
 					tq.Deadline = 600.0
 				}
-				if hint.GetXdist() != 0 {
-					tq.Xdist = hint.GetXdist()
+				if rule.GetXdist() != 0 {
+					tq.Xdist = rule.GetXdist()
 				}
-				if hint.GetRetry() > 0 {
-					tq.Retry = hint.GetRetry()
+				if rule.GetRetry() > 0 {
+					tq.Retry = rule.GetRetry()
+				}
+				if rule.GetResource() > 0 {
+					tq.Resource = rule.GetResource()
 				}
 			}
 		}
@@ -101,7 +108,7 @@ func (x *Xpytest) Execute(
 	if thread == 0 {
 		thread = (runtime.NumCPU() + bucket - 1) / bucket
 	}
-	rb := resourcebuckets.NewResourceBuckets(bucket, thread)
+	rb := resourcebuckets.NewResourceBuckets(bucket, thread*resourceResolution)
 	resultChan := make(chan *pytest.Result, thread)
 
 	printer := sync.WaitGroup{}
@@ -152,10 +159,14 @@ func (x *Xpytest) Execute(
 	for _, t := range tests {
 		t := t
 		usage := rb.Acquire(func() int {
+			req := float64(resourceResolution)
 			if t.Xdist > 0 {
-				return int(t.Xdist)
+				req *= float64(t.Xdist)
 			}
-			return 1
+			if t.Resource > 0 {
+				req *= float64(t.Resource)
+			}
+			return int(math.Ceil(req))
 		}())
 		wg.Add(1)
 		go func() {
