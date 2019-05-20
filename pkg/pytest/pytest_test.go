@@ -80,26 +80,6 @@ func TestPytestWithXdist(t *testing.T) {
 	}
 }
 
-func TestPytestWhenAllTestsAreDeselected(t *testing.T) {
-	ctx := context.Background()
-	p := pytest.NewPytest("python3")
-	executor := &pytestExecutor{
-		TestResult: &xpytest_proto.TestResult{
-			Status: xpytest_proto.TestResult_FAILED,
-			Stdout: "=== 123 deselected in 1.23 seconds ===",
-		},
-	}
-	p.Executor = executor.Execute
-	p.Files = []string{"test_foo.py"}
-	p.Deadline = time.Minute
-	if r, err := p.Execute(ctx); err != nil {
-		t.Fatalf("failed to execute: %s", err)
-	} else if s := r.Summary(); s !=
-		"[SUCCESS] test_foo.py (123 deselected in 1.23 seconds)" {
-		t.Fatalf("unexpected summary: %s", s)
-	}
-}
-
 func TestPytestWithFlakyTest(t *testing.T) {
 	ctx := context.Background()
 	p := pytest.NewPytest("python3")
