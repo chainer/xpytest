@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -135,7 +136,8 @@ func executeInternal(
 	})
 
 	// Wait for the command.
-	if err := cmd.Wait(); err != nil {
+	err = cmd.Wait()
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "[DEBUG] failed to wait a command: %s: %s\n",
 			strings.Join(args, " "), err)
 		cmd.Process.Kill()
@@ -147,6 +149,17 @@ func executeInternal(
 	if timeout {
 		result.Status = xpytest_proto.TestResult_TIMEOUT
 	} else if cmd.ProcessState.Success() {
+		result.Status = xpytest_proto.TestResult_SUCCESS
+	} else if hasNoTests := func() bool {
+		// NOTE: pytest fails with code=5 if there are no tests:
+		// https://docs.pytest.org/en/latest/usage.html
+		if err, ok := err.(*exec.ExitError); ok {
+			if s, ok := err.Sys().(syscall.WaitStatus); ok {
+				return s.ExitStatus() == 5
+			}
+		}
+		return false
+	}(); hasNoTests {
 		result.Status = xpytest_proto.TestResult_SUCCESS
 	} else {
 		result.Status = xpytest_proto.TestResult_FAILED
