@@ -24,11 +24,24 @@ func TestExecute(t *testing.T) {
 
 func TestExecuteWithFailure(t *testing.T) {
 	ctx := context.Background()
-	r, err := pytest.Execute(ctx, []string{"false"}, time.Second, nil)
+	r, err := pytest.Execute(
+		ctx, []string{"bash", "-c", "exit 1"}, time.Second, nil)
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
 	}
 	if r.Status != xpytest_proto.TestResult_FAILED {
+		t.Fatalf("unexpected status: %s", r.Status)
+	}
+}
+
+func TestExecuteWithNoTests(t *testing.T) {
+	ctx := context.Background()
+	r, err := pytest.Execute(
+		ctx, []string{"bash", "-c", "exit 5"}, time.Second, nil)
+	if err != nil {
+		t.Fatalf("failed to execute: %s", err)
+	}
+	if r.Status != xpytest_proto.TestResult_SUCCESS {
 		t.Fatalf("unexpected status: %s", r.Status)
 	}
 }
