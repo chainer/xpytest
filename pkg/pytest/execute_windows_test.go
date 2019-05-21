@@ -24,12 +24,24 @@ func TestExecute(t *testing.T) {
 
 func TestExecuteWithFailure(t *testing.T) {
 	ctx := context.Background()
-	equivalentFalseCmd := []string{"cmd", "/c", "echo Y | choice /C:Y > NUL"}
-	r, err := pytest.Execute(ctx, equivalentFalseCmd, time.Second*3, nil)
+	r, err := pytest.Execute(
+		ctx, []string{"cmd", "/c", "powershell -Command exit 1"}, time.Second*3, nil)
 	if err != nil {
 		t.Fatalf("failed to execute: %s", err)
 	}
 	if r.Status != xpytest_proto.TestResult_FAILED {
+		t.Fatalf("unexpected status: %s", r.Status)
+	}
+}
+
+func TestExecuteWithNoTests(t *testing.T) {
+	ctx := context.Background()
+	r, err := pytest.Execute(
+		ctx, []string{"cmd", "/c", "powershell -Command exit 5"}, time.Second*3, nil)
+	if err != nil {
+		t.Fatalf("failed to execute: %s", err)
+	}
+	if r.Status != xpytest_proto.TestResult_SUCCESS {
 		t.Fatalf("unexpected status: %s", r.Status)
 	}
 }
