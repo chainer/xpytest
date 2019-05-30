@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"path"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"sort"
@@ -51,7 +51,7 @@ func (x *Xpytest) AddTestsWithFilePattern(pattern string) error {
 			"failed to find files with pattern: %s: %s", pattern, err)
 	}
 	for _, f := range files {
-		if regexp.MustCompile(`^test_.*\.py$`).MatchString(path.Base(f)) {
+		if regexp.MustCompile(`^test_.*\.py$`).MatchString(filepath.Base(f)) {
 			x.Tests = append(x.GetTests(), &xpytest_proto.TestQuery{File: f})
 		}
 	}
