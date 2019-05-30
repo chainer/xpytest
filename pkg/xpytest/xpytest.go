@@ -68,7 +68,8 @@ func (x *Xpytest) ApplyHint(h *xpytest_proto.HintFile) error {
 		rule := rules[len(rules)-i-1]
 		for _, tq := range x.GetTests() {
 			if tq.GetFile() == rule.GetName() ||
-				strings.HasSuffix(tq.GetFile(), "/"+rule.GetName()) {
+				strings.HasSuffix(tq.GetFile(), string(filepath.Separator)+
+					rule.GetName()) {
 				tq.Priority = int32(priority)
 				if rule.GetDeadline() != 0 {
 					tq.Deadline = rule.GetDeadline()
