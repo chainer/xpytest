@@ -50,7 +50,7 @@ func (x TestResult_Status) String() string {
 	return proto.EnumName(TestResult_Status_name, int32(x))
 }
 func (TestResult_Status) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_test_case_84f24dfca25eb702, []int{1, 0}
+	return fileDescriptor_test_case_044fbc67b1ebf751, []int{1, 0}
 }
 
 type TestQuery struct {
@@ -76,7 +76,7 @@ func (m *TestQuery) Reset()         { *m = TestQuery{} }
 func (m *TestQuery) String() string { return proto.CompactTextString(m) }
 func (*TestQuery) ProtoMessage()    {}
 func (*TestQuery) Descriptor() ([]byte, []int) {
-	return fileDescriptor_test_case_84f24dfca25eb702, []int{0}
+	return fileDescriptor_test_case_044fbc67b1ebf751, []int{0}
 }
 func (m *TestQuery) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TestQuery.Unmarshal(m, b)
@@ -157,7 +157,7 @@ func (m *TestResult) Reset()         { *m = TestResult{} }
 func (m *TestResult) String() string { return proto.CompactTextString(m) }
 func (*TestResult) ProtoMessage()    {}
 func (*TestResult) Descriptor() ([]byte, []int) {
-	return fileDescriptor_test_case_84f24dfca25eb702, []int{1}
+	return fileDescriptor_test_case_044fbc67b1ebf751, []int{1}
 }
 func (m *TestResult) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TestResult.Unmarshal(m, b)
@@ -214,7 +214,10 @@ func (m *TestResult) GetTime() float32 {
 
 type HintFile struct {
 	// TODO(imos): Deprecate this once it is confirmed that no one uses this.
-	SlowTests            []*HintFile_Rule `protobuf:"bytes,1,rep,name=slow_tests,json=slowTests,proto3" json:"slow_tests,omitempty"`
+	SlowTests []*HintFile_Rule `protobuf:"bytes,1,rep,name=slow_tests,json=slowTests,proto3" json:"slow_tests,omitempty"`
+	// A list of rules.  If multiple rules matches a test target, a former rule
+	// will override a latter rule.  Test targets that no rule matches should be
+	// deprioritized.
 	Rules                []*HintFile_Rule `protobuf:"bytes,2,rep,name=rules,proto3" json:"rules,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
@@ -225,7 +228,7 @@ func (m *HintFile) Reset()         { *m = HintFile{} }
 func (m *HintFile) String() string { return proto.CompactTextString(m) }
 func (*HintFile) ProtoMessage()    {}
 func (*HintFile) Descriptor() ([]byte, []int) {
-	return fileDescriptor_test_case_84f24dfca25eb702, []int{2}
+	return fileDescriptor_test_case_044fbc67b1ebf751, []int{2}
 }
 func (m *HintFile) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_HintFile.Unmarshal(m, b)
@@ -281,7 +284,7 @@ func (m *HintFile_Rule) Reset()         { *m = HintFile_Rule{} }
 func (m *HintFile_Rule) String() string { return proto.CompactTextString(m) }
 func (*HintFile_Rule) ProtoMessage()    {}
 func (*HintFile_Rule) Descriptor() ([]byte, []int) {
-	return fileDescriptor_test_case_84f24dfca25eb702, []int{2, 0}
+	return fileDescriptor_test_case_044fbc67b1ebf751, []int{2, 0}
 }
 func (m *HintFile_Rule) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_HintFile_Rule.Unmarshal(m, b)
@@ -345,10 +348,10 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("xpytest/proto/test_case.proto", fileDescriptor_test_case_84f24dfca25eb702)
+	proto.RegisterFile("xpytest/proto/test_case.proto", fileDescriptor_test_case_044fbc67b1ebf751)
 }
 
-var fileDescriptor_test_case_84f24dfca25eb702 = []byte{
+var fileDescriptor_test_case_044fbc67b1ebf751 = []byte{
 	// 407 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x51, 0x4d, 0x8b, 0xd4, 0x40,
 	0x10, 0xb5, 0xf3, 0xe5, 0xa4, 0x56, 0x25, 0x34, 0x22, 0x61, 0x51, 0x08, 0x39, 0xe5, 0x94, 0x85,

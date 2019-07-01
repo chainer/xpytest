@@ -69,5 +69,8 @@ message HintFile {
   // TODO(imos): Deprecate this once it is confirmed that no one uses this.
   repeated Rule slow_tests = 1;
 
+  // A list of rules.  If multiple rules matches a test target, a former rule
+  // will override a latter rule.  Test targets that no rule matches should be
+  // deprioritized.
   repeated Rule rules = 2;
 }
